@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: return-predictor
+  labels:
+    app: return-predictor
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: return-predictor
+  template:
+    metadata:
+      labels:
+        app: return-predictor
+    spec:
+      containers:
+      - name: return-predictor
+        image: gcr.io/gpu-return-predictor/return-predictor:latest
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: return-predictor-service
+spec:
+  selector:
+    app: return-predictor
+  ports:
+  - port: 80
+    targetPort: 8080
+  type: LoadBalancer
